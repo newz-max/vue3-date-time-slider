@@ -1,14 +1,14 @@
 <template>
   <div
     ref="scalBarRef"
-    class="v3date-time-slider-scale-bar"
-    :class="[classByType]"
+    :class="[classByType, `${classPrefix}-scale-bar`]"
   ></div>
 </template>
 
 <script lang="ts" setup>
 import { computed, ref } from "vue";
 import { ScaleBarProps } from ".";
+import { classPrefix } from "../htmlClass";
 
 const props = defineProps<ScaleBarProps>();
 
@@ -33,6 +33,7 @@ const scalBarRef = ref<HTMLDivElement>();
   height: 20px;
   background-color: #808080;
 }
+
 .v3date-time-slider-day-middle-scale-bar {
   height: 28px;
   background-color: #cbc9c9;
