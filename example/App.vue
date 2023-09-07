@@ -1,11 +1,15 @@
 <script setup lang="ts">
-import { DateTimeSlider } from "../dist/date-time-slider.js";
-// import {DateTimeSlider} from '../packages'
-console.log(1);
+import {} from "../packages";
 </script>
 
 <template>
-  <DateTimeSlider test="123" />
+  <div class="container"></div>
 </template>
 
-<style scoped></style>
+<style lang="scss" scoped>
+.container {
+  background-color: black;
+  width: 100vw;
+  height: 100vh;
+}
+</style>
