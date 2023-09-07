@@ -1,9 +1,13 @@
 <script setup lang="ts">
-import {} from "../packages";
+import { ScaleBarGroup, ScaleBar } from "../packages";
 </script>
 
 <template>
-  <div class="container"></div>
+  <div class="container">
+    <ScaleBarGroup>
+      <ScaleBar type="default" />
+    </ScaleBarGroup>
+  </div>
 </template>
 
 <style lang="scss" scoped>

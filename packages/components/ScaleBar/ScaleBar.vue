@@ -4,7 +4,6 @@
     class="v3date-time-slider-scale-bar"
     :class="[classByType]"
   ></div>
-  <div style="display: none">{{ scalBar }}</div>
 </template>
 
 <script lang="ts" setup>
