@@ -1,27 +1,23 @@
 <template>
   <div
-    ref="scalBarRef"
+    ref="scaleBarRef"
     :class="[classByType, `${classPrefix}-scale-bar`]"
   ></div>
 </template>
 
 <script lang="ts" setup>
 import { computed, ref } from "vue";
-import { ScaleBarProps } from ".";
+import { ScaleBarProps, scaleBarPropstypes } from ".";
 import { classPrefix } from "../htmlClass";
 
 const props = defineProps<ScaleBarProps>();
 
-const classKeyVal = {
-  default: "v3date-time-slider-default-scale-bar",
-  dayMiddle: "v3date-time-slider-day-middle-scale-bar",
-};
 const classByType = computed(() => {
-  const res = classKeyVal[props.type];
+  const res = scaleBarPropstypes[props.type];
   return res;
 });
 
-const scalBarRef = ref<HTMLDivElement>();
+const scaleBarRef = ref<HTMLDivElement>();
 </script>
 
 <style lang="scss" scoped>
@@ -37,5 +33,11 @@ const scalBarRef = ref<HTMLDivElement>();
 .v3date-time-slider-day-middle-scale-bar {
   height: 28px;
   background-color: #cbc9c9;
+}
+
+.v3date-time-slider-bar-start,
+.v3date-time-slider-bar-end {
+  height: 40px;
+  background-color: white;
 }
 </style>

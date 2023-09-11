@@ -1,17 +1,16 @@
-<script setup lang="ts">
-import { ScaleBarGroup, ScaleBar } from "../packages";
-</script>
-
 <template>
   <div class="container">
-    <ScaleBarGroup>
-      <ScaleBar type="default" />
-    </ScaleBarGroup>
+    <DateTimeSlider />
   </div>
 </template>
 
+<script setup lang="ts">
+import { DateTimeSlider } from "../packages";
+</script>
+
 <style lang="scss" scoped>
 .container {
+  display: flex;
   background-color: black;
   width: 100vw;
   height: 100vh;
