@@ -21,9 +21,6 @@ export default defineConfig({
       },
     },
     minify: "terser",
-    terserOptions: {
-      compress: {},
-    },
   },
   plugins: [
     vue(),
@@ -31,4 +28,9 @@ export default defineConfig({
       tsconfigPath: "./tsconfig.json",
     }),
   ],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "packages"),
+    },
+  },
 });

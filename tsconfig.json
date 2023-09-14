@@ -19,7 +19,11 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "types": ["dist/**/*"]
+    "types": ["dist/**/*"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["packages/*"]
+    }
   },
   "include": ["packages/**/*.ts", "packages/**/*.vue"],
   "references": [{ "path": "./tsconfig.node.json" }]
