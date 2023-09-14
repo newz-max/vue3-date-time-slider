@@ -5,12 +5,18 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@types/lodash':
+    specifier: ^4.14.198
+    version: 4.14.198
   date-time-slider:
     specifier: 'link:'
     version: 'link:'
   dayjs:
     specifier: ^1.11.9
     version: 1.11.9
+  lodash:
+    specifier: ^4.17.21
+    version: 4.17.21
 
 devDependencies:
   '@types/node':
@@ -20,8 +26,8 @@ devDependencies:
     specifier: ^4.2.3
     version: 4.2.3(vite@4.4.5)(vue@3.3.4)
   sass:
-    specifier: ^1.66.1
-    version: 1.66.1
+    specifier: ^1.67.0
+    version: 1.67.0
   terser:
     specifier: ^5.19.4
     version: 5.19.4
@@ -30,7 +36,7 @@ devDependencies:
     version: 5.0.2
   vite:
     specifier: ^4.4.5
-    version: 4.4.5(@types/node@20.5.9)(sass@1.66.1)(terser@5.19.4)
+    version: 4.4.5(@types/node@20.5.9)(sass@1.67.0)(terser@5.19.4)
   vite-plugin-dts:
     specifier: ^3.5.3
     version: 3.5.3(@types/node@20.5.9)(typescript@5.0.2)(vite@4.4.5)
@@ -404,6 +410,10 @@ packages:
     resolution: {integrity: sha512-LG4opVs2ANWZ1TJoKc937iMmNstM/d0ae1vNbnBvBhqCSezgVUOzcLCqbI5elV8Vy6WKwKjaqR+zO9VKirBBCA==}
     dev: true
 
+  /@types/lodash@4.14.198:
+    resolution: {integrity: sha512-trNJ/vtMZYMLhfN45uLq4ShQSw0/S7xCTLLVM+WM1rmFpba/VS42jVUgaO3w/NOLiWR/09lnYk0yMaA/atdIsg==}
+    dev: false
+
   /@types/node@20.5.9:
     resolution: {integrity: sha512-PcGNd//40kHAS3sTlzKB9C9XL4K0sTup8nbG5lC14kzEteTNuAFh9u5nA0o5TWnSG2r/JNPRXFVcHJIIeRlmqQ==}
     dev: true
@@ -415,7 +425,7 @@ packages:
       vite: ^4.0.0
       vue: ^3.2.25
     dependencies:
-      vite: 4.4.5(@types/node@20.5.9)(sass@1.66.1)(terser@5.19.4)
+      vite: 4.4.5(@types/node@20.5.9)(sass@1.67.0)(terser@5.19.4)
       vue: 3.3.4
     dev: true
 
@@ -864,7 +874,6 @@ packages:
 
   /lodash@4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
-    dev: true
 
   /lru-cache@6.0.0:
     resolution: {integrity: sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==}
@@ -964,8 +973,8 @@ packages:
       fsevents: 2.3.3
     dev: true
 
-  /sass@1.66.1:
-    resolution: {integrity: sha512-50c+zTsZOJVgFfTgwwEzkjA3/QACgdNsKueWPyAR0mRINIvLAStVQBbPg14iuqEQ74NPDbXzJARJ/O4SI1zftA==}
+  /sass@1.67.0:
+    resolution: {integrity: sha512-SVrO9ZeX/QQyEGtuZYCVxoeAL5vGlYjJ9p4i4HFuekWl8y/LtJ7tJc10Z+ck1c8xOuoBm2MYzcLfTAffD0pl/A==}
     engines: {node: '>=14.0.0'}
     hasBin: true
     dependencies:
@@ -1085,7 +1094,7 @@ packages:
       debug: 4.3.4
       kolorist: 1.8.0
       typescript: 5.0.2
-      vite: 4.4.5(@types/node@20.5.9)(sass@1.66.1)(terser@5.19.4)
+      vite: 4.4.5(@types/node@20.5.9)(sass@1.67.0)(terser@5.19.4)
       vue-tsc: 1.8.8(typescript@5.0.2)
     transitivePeerDependencies:
       - '@types/node'
@@ -1093,7 +1102,7 @@ packages:
       - supports-color
     dev: true
 
-  /vite@4.4.5(@types/node@20.5.9)(sass@1.66.1)(terser@5.19.4):
+  /vite@4.4.5(@types/node@20.5.9)(sass@1.67.0)(terser@5.19.4):
     resolution: {integrity: sha512-4m5kEtAWHYr0O1Fu7rZp64CfO1PsRGZlD3TAB32UmQlpd7qg15VF7ROqGN5CyqN7HFuwr7ICNM2+fDWRqFEKaA==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
@@ -1125,7 +1134,7 @@ packages:
       esbuild: 0.18.20
       postcss: 8.4.29
       rollup: 3.28.1
-      sass: 1.66.1
+      sass: 1.67.0
       terser: 5.19.4
     optionalDependencies:
       fsevents: 2.3.3
