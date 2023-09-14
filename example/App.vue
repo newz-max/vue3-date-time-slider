@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <DateTimeSlider />
+    <DateTimeSlider type="month" />
   </div>
 </template>
 

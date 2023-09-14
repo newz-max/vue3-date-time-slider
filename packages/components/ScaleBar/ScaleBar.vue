@@ -10,7 +10,9 @@ import { computed, ref } from "vue";
 import { ScaleBarProps, scaleBarPropstypes } from ".";
 import { classPrefix } from "../htmlClass";
 
-const props = defineProps<ScaleBarProps>();
+const props = withDefaults(defineProps<ScaleBarProps>(), {
+  type: "default",
+});
 
 const classByType = computed(() => {
   const res = scaleBarPropstypes[props.type];
@@ -31,7 +33,7 @@ const scaleBarRef = ref<HTMLDivElement>();
 }
 
 .v3date-time-slider-day-middle-scale-bar {
-  height: 28px;
+  height: 24px;
   background-color: #cbc9c9;
 }
 

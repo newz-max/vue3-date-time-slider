@@ -6,7 +6,12 @@
       leftSpace ? `padding-left:${scaleBarSpaceWidth}px` : '',
     ]"
   >
-    <slot></slot>
+    <!-- 刻度容器盒 -->
+    <div :class="[`${classPrefix}-scale-group-box`]">
+      <slot></slot>
+    </div>
+    <!-- 背景色 -->
+    <div :class="[`${classPrefix}-backgroup-color-div`]"></div>
 
     <div :class="[`${classPrefix}-bottom-text`]">
       <slot name="bottomText"></slot>
@@ -39,7 +44,10 @@ const scaleBarSpaceWidth = computed(() => {
 
 /** 刻度组容器的宽度 */
 const groupWidth = computed(() => {
-  const res = scaleBarSpaceWidth.value * props.scaleBarLength;
+  const spaceWidth = scaleBarSpaceWidth.value || 0;
+  const barLength = props.scaleBarLength || 0;
+
+  const res = spaceWidth * barLength;
   return res;
 });
 </script>
@@ -49,10 +57,13 @@ const groupWidth = computed(() => {
   display: flex;
   justify-content: space-between;
   --month-width: 288px;
-  --day-width: 76px;
+  --day-width: 380px;
   --time-width: 67px;
   --group-width: 0px;
   width: var(--group-width);
+  position: relative;
+  height: 40px;
+  background-color: #585858;
 }
 
 .v3date-time-slider-group-month {
@@ -63,5 +74,37 @@ const groupWidth = computed(() => {
 }
 .v3date-time-slider-group-time {
   max-width: var(--time-width);
+}
+.v3date-time-slider-bottom-text {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  font-size: 12px;
+  font-family: Source Han Sans CN-Regular, Source Han Sans CN;
+  font-weight: 400;
+  color: #ffffff;
+  line-height: 20px;
+  height: 13px;
+  padding-left: 9px;
+  padding-bottom: 3px;
+}
+
+.v3date-time-slider-backgroup-color-div {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 20px;
+  z-index: 0;
+  background-color: #4f4f4f;
+}
+
+.v3date-time-slider-scale-group-box {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  justify-content: space-between;
+  z-index: 1;
 }
 </style>
