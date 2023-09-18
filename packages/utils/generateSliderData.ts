@@ -2,7 +2,7 @@ import { DateTimeSliderProps } from "..";
 // dyajs
 import dayjs from "dayjs";
 // utils
-import { generateDateSubset } from "./generateData";
+import { generateDateSubset } from "./generateDate";
 
 /** 生成控件数据 */
 export const generateSliderData = (
@@ -11,8 +11,6 @@ export const generateSliderData = (
 ) => {
   const startDayjs = dayjs(startDate);
   const endDayjs = dayjs(endDate);
-
-  // const res = generateDate(startDayjs.toDate(), endDayjs.toDate());
 
   const res = generateDateSubset(startDayjs.toDate(), endDayjs.toDate());
 

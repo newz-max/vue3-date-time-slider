@@ -1,0 +1,70 @@
+#v3date-time-slider-scale-label-arrow,
+#v3date-time-slider-scale-label-arrow::before {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: inherit;
+}
+
+#v3date-time-slider-scale-label-arrow {
+  visibility: hidden;
+}
+
+#v3date-time-slider-scale-label-arrow::before {
+  visibility: visible;
+  content: "";
+  transform: rotate(45deg);
+}
+
+.v3date-time-slider-scale-label {
+  background-color: #333333;
+  width: 75px;
+  height: 18px;
+  border-radius: 4px;
+  // display: flex;
+  // align-items: center;
+  // justify-content: center;
+  // padding: 0 6px;
+  padding-left: 6px;
+
+  font-size: 12px;
+  font-family: Source Han Sans CN-Regular, Source Han Sans CN;
+  font-weight: 400;
+  color: #ffffff;
+  // line-height: 43px;
+  z-index: 10;
+
+  --arrow-left: 0px;
+}
+
+#v3date-time-slider-scale-label {
+  display: none;
+}
+
+#v3date-time-slider-scale-label[data-show] {
+  display: block;
+}
+
+#v3date-time-slider-scale-label-arrow[data-popper-arrow] {
+  left: var(--arrow-left) !important;
+}
+
+#v3date-time-slider-scale-label[data-popper-placement^="top"]
+  > #v3date-time-slider-scale-label-arrow {
+  bottom: -4px;
+}
+
+#v3date-time-slider-scale-label[data-popper-placement^="bottom"]
+  > #v3date-time-slider-scale-label-arrow {
+  top: -4px;
+}
+
+#v3date-time-slider-scale-label[data-popper-placement^="left"]
+  > #v3date-time-slider-scale-label-arrow {
+  right: -4px;
+}
+
+#v3date-time-slider-scale-label[data-popper-placement^="right"]
+  > #v3date-time-slider-scale-label-arrow {
+  left: -4px;
+}

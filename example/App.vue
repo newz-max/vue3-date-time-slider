@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <DateTimeSlider type="month" />
+    <DateTimeSlider type="time" />
   </div>
 </template>
 
@@ -14,5 +14,7 @@ import { DateTimeSlider } from "../packages";
   background-color: black;
   width: 100vw;
   height: 100vh;
+  padding-top: 100px;
+  box-sizing: border-box;
 }
 </style>

@@ -2,7 +2,10 @@
   <div
     :class="[`${classPrefix}-scale-group`, groupTypeDivClass]"
     :style="[
-      { '--group-width': `${groupWidth}px` },
+      {
+        '--group-width': `${groupWidth}px`,
+        '--scale-bar-space-width': `${leftSpace ? scaleBarSpaceWidth : 0}px`,
+      },
       leftSpace ? `padding-left:${scaleBarSpaceWidth}px` : '',
     ]"
   >
@@ -48,6 +51,7 @@ const groupWidth = computed(() => {
   const barLength = props.scaleBarLength || 0;
 
   const res = spaceWidth * barLength;
+
   return res;
 });
 </script>
@@ -55,12 +59,12 @@ const groupWidth = computed(() => {
 <style lang="scss" scoped>
 .v3date-time-slider-scale-group {
   display: flex;
-  justify-content: space-between;
   --month-width: 288px;
   --day-width: 380px;
   --time-width: 67px;
   --group-width: 0px;
   width: var(--group-width);
+  min-width: var(--group-width);
   position: relative;
   height: 40px;
   background-color: #585858;
@@ -85,7 +89,7 @@ const groupWidth = computed(() => {
   color: #ffffff;
   line-height: 20px;
   height: 13px;
-  padding-left: 9px;
+  margin-left: calc(var(--scale-bar-space-width) + 9px);
   padding-bottom: 3px;
 }
 
@@ -104,7 +108,6 @@ const groupWidth = computed(() => {
   display: flex;
   width: 100%;
   height: 100%;
-  justify-content: space-between;
   z-index: 1;
 }
 </style>

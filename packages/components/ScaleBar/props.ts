@@ -1,7 +1,9 @@
+import { ConvertDataListItemReturnTypeGroupItem } from "@/components";
 export type ScaleBarPropsType = "default" | "dayMiddle" | "start" | "end";
 
 export interface ScaleBarProps {
   type: ScaleBarPropsType;
+  scaleLabel?: ConvertDataListItemReturnTypeGroupItem["scaleLabel"];
 }
 
 export const scaleBarPropstypes = {

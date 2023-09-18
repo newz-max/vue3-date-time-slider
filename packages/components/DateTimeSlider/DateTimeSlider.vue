@@ -1,21 +1,29 @@
 <template>
-  <div :class="[`${classPrefix}-container`]">
-    <ScaleBarGroup
-      v-for="groupItem in currentTypeData"
-      :type="props.type"
-      :scale-bar-length="groupItem.groupItems.length"
-    >
-      <ScaleBar
-        v-for="barItem in groupItem.groupItems"
-        :type="barItem.scaleBarType"
-      />
+  <div :class="[`${classPrefix}-popper-container`]"></div>
 
-      <template #bottomText>
-        <div>
-          {{ groupItem.groupLabel }}
-        </div>
-      </template>
-    </ScaleBarGroup>
+  <div
+    :class="[`${classPrefix}-container`]"
+    :style="{ '--max-width': maxWidth }"
+  >
+    <div :class="[`${classPrefix}-container-body`]">
+      <ScaleBarGroup
+        v-for="(groupItem, groupIndex) in currentTypeData"
+        :type="props.type"
+        :scale-bar-length="groupItem.groupItems.length"
+      >
+        <ScaleBar
+          v-for="barItem in groupItem.groupItems"
+          :type="barItem.scaleBarType"
+          :scaleLabel="barItem.scaleLabel"
+        />
+
+        <template #bottomText>
+          <div v-show="textVisible(groupIndex)">
+            {{ groupItem.groupLabel }}
+          </div>
+        </template>
+      </ScaleBarGroup>
+    </div>
   </div>
 </template>
 
@@ -44,10 +52,16 @@ interface DateTimeSliderProps {
    * 可以是 Date 对象，可以是字符串日期 : 2023-01-01 00:00:00,可以是数字类型的时间戳
    */
   endDate?: Date | string | number;
+  /**
+   * 最大宽度
+   * 按照正常的css值填入即可
+   */
+  maxWidth?: string;
 }
 
 const props = withDefaults(defineProps<DateTimeSliderProps>(), {
   type: "day",
+  maxWidth: "80vw",
 });
 
 /** 传入的开始时间 */
@@ -90,12 +104,34 @@ const currentTypeData = computed(() => {
   return res;
 });
 currentTypeData.value;
+
+const textVisible = computed(() => {
+  return (index: number) => {
+    if (props.type === "time") {
+      return index % 2 === 0;
+    }
+    return true;
+  };
+});
 </script>
 
 <style lang="scss" scoped>
 .v3date-time-slider-container {
   display: flex;
-  width: auto;
+  --max-width: 80vw;
+  max-width: var(--max-width);
   background-color: white;
+  height: 40px;
+}
+.v3date-time-slider-container-body {
+  width: auto;
+  overflow-x: auto;
+  display: flex;
+  overflow-y: hidden;
+  // border-right: 1px solid white;
+  &::-webkit-scrollbar {
+    display: none;
+    // height: 0;
+  }
 }
 </style>

@@ -4,6 +4,7 @@ import { YearSubset } from "@/utils";
 import { ConvertDataListItemReturnType } from "./types";
 // lodash
 import { cloneDeep } from "lodash";
+import dayjs from "dayjs";
 
 /** 将日期数据转换为符合控件组件设置类型对应的数据格式 */
 export const convertDataList = (
@@ -67,17 +68,28 @@ const fnObs = {
   month(dateList: YearSubset[]): ConvertDataListItemReturnType[] {
     const tempData = cloneDeep(dateList);
     const res = tempData.reduce(
-      (prev: ConvertDataListItemReturnType[], yearItem) => {
+      (prev: ConvertDataListItemReturnType[], yearItem, yearIndex) => {
         const { year } = yearItem;
         const group: ConvertDataListItemReturnType = {
           groupLabel: year.toString(),
           groupItems: [],
         };
-        yearItem.months.forEach((monthItem) => {
+
+        const isYearItemsLast = yearIndex === tempData.length - 1;
+
+        yearItem.months.forEach((monthItem, monthIndex) => {
           const { month } = monthItem;
 
           let scaleBarType: ScaleBarPropsType = "default";
-          if (month === "01") scaleBarType = "start";
+
+          // 一月份或者是该组中第一个元素
+          if (month === "01" || monthIndex === 0) scaleBarType = "start";
+
+          // 最后一月
+          const isMonthItemLast = monthIndex === yearItem.months.length - 1;
+          // if (isYearItemsLast && isMonthItemLast) {
+          //   scaleBarType = "end";
+          // }
 
           group.groupItems.push({
             scaleLabel: `${year}-${month}-01`,
@@ -94,6 +106,58 @@ const fnObs = {
   },
   time(dateList: YearSubset[]): ConvertDataListItemReturnType[] {
     const tempData = cloneDeep(dateList);
-    return tempData;
+
+    const dayjsInstance = dayjs();
+
+    // 年遍历
+    const res = tempData.reduce(
+      (prev: ConvertDataListItemReturnType[], yearItem) => {
+        const { months } = yearItem;
+        // 月遍历
+        months.forEach((monthItem) => {
+          const { weeks, month } = monthItem;
+
+          // 周遍历
+          weeks.forEach((weekItem) => {
+            const { days } = weekItem;
+            // 天遍历
+            days.forEach((dayItem) => {
+              const { times, day } = dayItem;
+
+              const group: ConvertDataListItemReturnType = {
+                groupLabel: `${month}-${day}`,
+                groupItems: [],
+              };
+
+              // 时间遍历
+              times.forEach((timeItem, timeIndex) => {
+                const { time } = timeItem;
+
+                const timeDayjs = dayjsInstance
+                  .set("hour", parseInt(time))
+                  .set("minute", 0)
+                  .format("HH:mm");
+
+                let scaleBarType: ScaleBarPropsType = "default";
+
+                if (timeIndex === 0) scaleBarType = "start";
+
+                group.groupItems.push({
+                  scaleLabel: `${month}-${day} ${timeDayjs}`,
+                  scaleBarType,
+                });
+              });
+
+              prev.push(group);
+            });
+          });
+        });
+
+        return prev;
+      },
+      []
+    );
+
+    return res;
   },
 };

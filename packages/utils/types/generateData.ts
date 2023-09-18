@@ -1,6 +1,11 @@
+export interface TimeSubset {
+  time: string;
+}
+
 export interface DaySubset {
   day: string;
   weekDay: number;
+  times: TimeSubset[];
 }
 
 export interface WeekSubset {

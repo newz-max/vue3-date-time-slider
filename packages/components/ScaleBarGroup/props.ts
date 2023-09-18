@@ -15,7 +15,7 @@ export const scaleBarGroupPropsTypes = {
 };
 
 export const scaleBarGroupPropsTypesWidth = {
-  month: 23,
+  month: 24,
   day: 10,
   time: 16,
 };

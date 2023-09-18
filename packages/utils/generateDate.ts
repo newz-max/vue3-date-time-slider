@@ -76,6 +76,20 @@ export function generateDateSubset(
           const daySubset: DaySubset = {
             day: tempDay,
             weekDay,
+            times: [
+              {
+                time: "02:00:00",
+              },
+              {
+                time: "08:00:00",
+              },
+              {
+                time: "14:00:00",
+              },
+              {
+                time: "20:00:00",
+              },
+            ],
           };
           weekSubset.days.push(daySubset);
         }
