@@ -1,11 +1,10 @@
 <template>
-  <div :class="[`${classPrefix}-popper-container`]"></div>
-
   <div
     :class="[`${classPrefix}-container`]"
     :style="{ '--max-width': maxWidth }"
+    ref="container"
   >
-    <div :class="[`${classPrefix}-container-body`]">
+    <div ref="containerBox" :class="[`${classPrefix}-container-body`]">
       <ScaleBarGroup
         v-for="(groupItem, groupIndex) in currentTypeData"
         :type="props.type"
@@ -24,18 +23,24 @@
         </template>
       </ScaleBarGroup>
     </div>
+
+    <div :class="`${classPrefix}-block-move-bar-container`">
+      <SliderBlock />
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ScaleBar, ScaleBarGroup } from "@/components";
+import { ScaleBar, ScaleBarGroup, SliderBlock } from "@/components";
 import { classPrefix } from "@/components/htmlClass";
 // dayjs
 import dayjs from "dayjs";
 // utils
 import { generateSliderData } from "@/utils";
-import { computed } from "vue";
+import { computed, nextTick, onMounted, provide, ref } from "vue";
 import { convertDataList } from "./utils";
+// provide
+import { containerBoxKey, containerKey, offsetsKey } from "./injectProvide";
 
 interface DateTimeSliderProps {
   /**
@@ -95,11 +100,9 @@ const dateList = computed(() => {
   const res = generateSliderData(startDate.value, endDate.value);
   return res;
 });
-console.log(dateList.value, "dateList");
 
 const currentTypeData = computed(() => {
   const res = convertDataList(props.type, dateList.value);
-  console.log(res, "res");
 
   return res;
 });
@@ -113,25 +116,70 @@ const textVisible = computed(() => {
     return true;
   };
 });
+
+/** 最大容器标签 */
+const container = ref<HTMLDivElement>();
+/** 刻度组容器盒子 */
+const containerBox = ref<HTMLDivElement>();
+
+const scaleBarOffsets = ref<number[]>([]);
+provide(offsetsKey, { scaleBarOffsets });
+provide(containerKey, { container });
+provide(containerBoxKey, { containerBox });
+
+onMounted(() => {
+  nextTick(() => {
+    const scaleGroupBox = document.querySelectorAll(
+      ".v3date-time-slider-scale-group-box"
+    ) as NodeListOf<HTMLDivElement>;
+    const offsets = Array.from(scaleGroupBox).reduce((prev: number[], item) => {
+      const scaleBars = item.children as unknown as NodeListOf<HTMLDivElement>;
+      const groupLeft = item.parentElement?.offsetLeft;
+
+      Array.from(scaleBars).forEach((scaleItem) => {
+        const offset = scaleItem.offsetLeft + groupLeft;
+        prev.push(offset);
+      });
+      return prev;
+    }, []);
+
+    scaleBarOffsets.value = offsets;
+  });
+});
 </script>
 
 <style lang="scss" scoped>
 .v3date-time-slider-container {
+  div {
+    user-select: none;
+  }
   display: flex;
   --max-width: 80vw;
   max-width: var(--max-width);
   background-color: white;
   height: 40px;
+  position: relative;
 }
 .v3date-time-slider-container-body {
   width: auto;
   overflow-x: auto;
   display: flex;
   overflow-y: hidden;
+  position: relative;
   // border-right: 1px solid white;
   &::-webkit-scrollbar {
     display: none;
     // height: 0;
   }
+}
+
+.v3date-time-slider-block-move-bar-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  box-sizing: border-box;
+  z-index: 20;
 }
 </style>

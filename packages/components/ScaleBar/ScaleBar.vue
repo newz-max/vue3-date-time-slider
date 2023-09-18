@@ -1,5 +1,9 @@
 <template>
-  <div ref="scaleBarRef" :class="[classByType, `${classPrefix}-scale-bar`]">
+  <div
+    scale-bar
+    ref="scaleBarRef"
+    :class="[classByType, `${classPrefix}-scale-bar`]"
+  >
     <div
       :id="`${classPrefix}-scale-label`"
       ref="scaleLabelRef"
@@ -45,7 +49,7 @@ const scaleLabel = computed(() => {
 /** 提示内容标签 */
 const scaleLabelRef = ref<HTMLDivElement>();
 
-/** 箭头做偏移量 */
+/** 箭头左偏移量 */
 const arrowLeft = computed(() => {
   const res = -(scaleBarRef.value?.offsetWidth || 0) / 2 - 1;
   return res;
@@ -55,7 +59,6 @@ const arrowLeft = computed(() => {
 const usePopperRes = ref<UsePopperReturnType>();
 
 usePopper(scaleBarRef, scaleLabelRef).then((res) => {
-  console.log(res);
   usePopperRes.value = res;
 });
 
@@ -66,8 +69,20 @@ const getScaleVal = () => {
   return res;
 };
 
+/** 获取该刻度定位值 */
+const getScalePosition = () => {
+  const offsetLeft = scaleBarRef.value?.offsetLeft || null;
+  console.log(offsetLeft, "offsetLeft");
+  return offsetLeft;
+};
+
+onMounted(() => {
+  console.log(333);
+});
+
 defineExpose({
   getScaleVal,
+  getScalePosition,
 });
 </script>
 

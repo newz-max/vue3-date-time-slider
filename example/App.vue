@@ -15,6 +15,7 @@ import { DateTimeSlider } from "../packages";
   width: 100vw;
   height: 100vh;
   padding-top: 100px;
+  padding-left: 100px;
   box-sizing: border-box;
 }
 </style>
