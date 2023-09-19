@@ -41,6 +41,7 @@ import { computed, nextTick, onMounted, provide, ref } from "vue";
 import { convertDataList } from "./utils";
 // provide
 import { containerBoxKey, containerKey, offsetsKey } from "./injectProvide";
+import { ScaleBarOffsetsItem } from "./types";
 
 interface DateTimeSliderProps {
   /**
@@ -122,7 +123,7 @@ const container = ref<HTMLDivElement>();
 /** 刻度组容器盒子 */
 const containerBox = ref<HTMLDivElement>();
 
-const scaleBarOffsets = ref<number[]>([]);
+const scaleBarOffsets = ref<ScaleBarOffsetsItem[]>([]);
 provide(offsetsKey, { scaleBarOffsets });
 provide(containerKey, { container });
 provide(containerBoxKey, { containerBox });
@@ -132,16 +133,23 @@ onMounted(() => {
     const scaleGroupBox = document.querySelectorAll(
       ".v3date-time-slider-scale-group-box"
     ) as NodeListOf<HTMLDivElement>;
-    const offsets = Array.from(scaleGroupBox).reduce((prev: number[], item) => {
-      const scaleBars = item.children as unknown as NodeListOf<HTMLDivElement>;
-      const groupLeft = item.parentElement?.offsetLeft;
+    const offsets = Array.from(scaleGroupBox).reduce(
+      (prev: ScaleBarOffsetsItem[], item) => {
+        const scaleBars =
+          item.children as unknown as NodeListOf<HTMLDivElement>;
+        const groupLeft = item.parentElement?.offsetLeft || 0;
 
-      Array.from(scaleBars).forEach((scaleItem) => {
-        const offset = scaleItem.offsetLeft + groupLeft;
-        prev.push(offset);
-      });
-      return prev;
-    }, []);
+        Array.from(scaleBars).forEach((scaleItem) => {
+          const offset = scaleItem.offsetLeft + groupLeft;
+          prev.push({
+            offset,
+            dom: scaleItem,
+          });
+        });
+        return prev;
+      },
+      []
+    );
 
     scaleBarOffsets.value = offsets;
   });

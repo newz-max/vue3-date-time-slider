@@ -1,6 +1,8 @@
 <template>
   <div class="container">
-    <DateTimeSlider type="time" />
+    <div class="box">
+      <DateTimeSlider type="time" />
+    </div>
   </div>
 </template>
 
@@ -17,5 +19,9 @@ import { DateTimeSlider } from "../packages";
   padding-top: 100px;
   padding-left: 100px;
   box-sizing: border-box;
+}
+
+.box {
+  position: absolute;
 }
 </style>

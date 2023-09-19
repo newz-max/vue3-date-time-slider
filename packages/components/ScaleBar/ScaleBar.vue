@@ -72,13 +72,10 @@ const getScaleVal = () => {
 /** 获取该刻度定位值 */
 const getScalePosition = () => {
   const offsetLeft = scaleBarRef.value?.offsetLeft || null;
-  console.log(offsetLeft, "offsetLeft");
   return offsetLeft;
 };
 
-onMounted(() => {
-  console.log(333);
-});
+onMounted(() => {});
 
 defineExpose({
   getScaleVal,

@@ -1,7 +1,9 @@
 import { InjectionKey, Ref } from "vue";
+// types
+import { ScaleBarOffsetsItem } from "./types";
 
 export const offsetsKey = Symbol("offsetsKey") as InjectionKey<{
-  scaleBarOffsets: Ref<number[]>;
+  scaleBarOffsets: Ref<ScaleBarOffsetsItem[]>;
 }>;
 
 export const containerKey = Symbol("containerKey") as InjectionKey<{

@@ -16,11 +16,14 @@ import {
   onBeforeUnmount,
   onMounted,
   ref,
+  nextTick,
   watchEffect,
+  watch,
 } from "vue";
 import { classPrefix } from "../htmlClass";
 import { containerBoxKey, containerKey, offsetsKey } from "..";
 import { baseLeftOffset } from "./utils";
+import { useMouse } from "../../hooks/mouse";
 
 const { scaleBarOffsets } = inject(offsetsKey, { scaleBarOffsets: ref([]) });
 const { container } = inject(containerKey, {
@@ -43,7 +46,7 @@ const handleMouseDown = (e: MouseEvent) => {
   isMouseDown.value = true;
 
   clickPosition.value =
-    e.clientX - ((blockRef.value?.offsetLeft || baseLeftOffset) + 7 || 0);
+    e.clientX - ((blockRef.value?.offsetLeft || baseLeftOffset) + 7);
 };
 
 /** 滑块 div */
@@ -51,54 +54,100 @@ const blockRef = ref<HTMLDivElement>();
 
 /** 在滑块上按下时的 x 偏移量（已经过计算） */
 const clickPosition = ref(0);
-/** 处理鼠标移动中 */
-const handleMouseMove = (e: MouseEvent) => {
-  if (isMouseDown.value) {
-    const { clientX } = e;
-    const x = clientX - clickPosition.value;
+/** 鼠标拖动后抬起时的 x 偏移量（已经过计算） */
+const mouseUpPosition = ref(0);
 
-    /** 得到滑块应在的刻度位置 */
-    const scalePosition =
-      scaleBarOffsets.value.find((item, index) => {
-        const nextScaleOffset = scaleBarOffsets.value[index + 1];
+const rectForContainer = ref<DOMRect>();
+onMounted(async () => {
+  await nextTick();
+  rectForContainer.value = container.value?.getBoundingClientRect();
+});
 
-        if (nextScaleOffset !== undefined) {
-          return x >= item && x < nextScaleOffset;
-        } else {
-          return x >= item;
-        }
-      }) || 0;
+/** 鼠标是否向右超出容器 */
+const rightBeyond = computed(() => {
+  const res = x.value + baseLeftOffset > (rectForContainer.value?.right || 0);
+  return res && isMouseDown.value;
+});
 
-    const flag = scalePosition > containerMaxWidth.value;
-    if (flag) {
-      containerBox.value?.scrollTo({
-        left: containerBox.value?.scrollLeft + scaleBarOffsets.value[1],
-      });
-    } else {
-      blockRef.value?.setAttribute(
-        "style",
-        `left : ${scalePosition + baseLeftOffset}px`
-      );
+/** 鼠标是否向左超出容器 */
+const leftByyond = computed(() => {
+  const res = x.value <= (rectForContainer.value?.left || 0) + 7;
+
+  return res && isMouseDown.value;
+});
+
+const { x } = useMouse();
+
+/** 监听鼠标移动 */
+watch(x, (n) => {
+  const flag = isMouseDown.value;
+
+  if (flag) {
+    // 向右超出
+    if (rightBeyond.value) {
+      const nextX = n + scaleBarOffsets.value[1].offset;
+      scrollToScale(nextX);
+    }
+    // 向左超出
+    else if (leftByyond.value) {
+    }
+    // 范围内移动
+    else {
+      const blockDom = blockRef.value as HTMLDivElement;
+
+      const scaleItem = getScale(calcMouseOffsetX(n));
+
+      if (scaleItem) {
+        blockDom.setAttribute(
+          "style",
+          `left:${scaleItem.offset + baseLeftOffset}px`
+        );
+      }
     }
   }
+});
+
+/** 滚动条到指定的刻度上 */
+const scrollToScale = (x: number) => {
+  const scaleItem = getScale(calcMouseOffsetX(x));
+  scaleItem?.dom.scrollIntoView();
+};
+
+/** 模糊查询相近的刻度 */
+const getScale = (x: number) => {
+  const scaleIem = scaleBarOffsets.value.find((item, index, self) => {
+    if (index === self.length - 1) return true;
+    const nextItem = self[index + 1];
+    const flag = x >= item.offset && x <= nextItem.offset;
+    if (flag) {
+      return true;
+    }
+  });
+
+  return scaleIem;
+};
+
+/** 代入鼠标 x 位置得出减去了控件距离视窗左侧距离的结果 */
+const calcMouseOffsetX = (mouseX: number) => {
+  const res = mouseX - (rectForContainer.value?.left || 0);
+  return res;
 };
 
 /** 处理鼠标从滑块抬起 */
-const handleMouseUp = () => {
+const handleMouseUp = (e: MouseEvent) => {
   isMouseDown.value = false;
-  console.log(22);
+  const rect = (container.value as HTMLDivElement).getBoundingClientRect();
+
+  mouseUpPosition.value = e.clientX - rect.left;
 };
 
 onMounted(() => {
-  document.removeEventListener("mouseup", handleMouseUp);
-  document.removeEventListener("mousemove", handleMouseMove);
-  document.addEventListener("mouseup", handleMouseUp);
-  document.addEventListener("mousemove", handleMouseMove);
+  window.removeEventListener("mouseup", handleMouseUp);
+  window.addEventListener("mouseup", handleMouseUp);
 });
 
 onBeforeUnmount(() => {
-  document.removeEventListener("mousemove", handleMouseMove);
-  document.removeEventListener("mouseup", handleMouseUp);
+  window.removeEventListener("mouseup", handleMouseUp);
 });
 </script>
 
