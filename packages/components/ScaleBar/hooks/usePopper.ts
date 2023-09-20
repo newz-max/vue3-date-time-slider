@@ -32,8 +32,11 @@ export const usePopper = (
           }
         );
 
-        function show() {
+        function show(e?: Event) {
           scaleLabelRef.value?.setAttribute("data-show", "");
+          if (e === undefined) {
+            scaleLabelRef.value?.setAttribute("isCall", "");
+          }
 
           // Enable the event listeners
           popperInstance.setOptions((options) => ({
@@ -48,7 +51,13 @@ export const usePopper = (
           popperInstance.update();
         }
 
-        function hide() {
+        function hide(e?: Event) {
+          const isCall = scaleLabelRef.value?.hasAttribute("isCall");
+
+          if (e && isCall) {
+            return;
+          }
+
           scaleLabelRef.value?.removeAttribute("data-show");
 
           // Disable the event listeners
@@ -59,6 +68,15 @@ export const usePopper = (
               { name: "eventListeners", enabled: false },
             ],
           }));
+        }
+
+        function hideIsCall() {
+          const isCall = scaleLabelRef.value?.hasAttribute("isCall");
+          if (isCall) {
+            scaleLabelRef.value?.removeAttribute("isCall");
+          }
+
+          hide();
         }
 
         const showEvents = ["mouseenter", "focus"];
@@ -76,6 +94,7 @@ export const usePopper = (
           popperInstance,
           show,
           hide,
+          hideIsCall,
         };
 
         resolve(res);

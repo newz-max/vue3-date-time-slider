@@ -80,6 +80,7 @@ onMounted(() => {});
 defineExpose({
   getScaleVal,
   getScalePosition,
+  usePopperRes,
 });
 </script>
 

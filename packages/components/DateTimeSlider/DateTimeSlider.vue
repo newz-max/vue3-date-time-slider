@@ -14,6 +14,7 @@
           v-for="barItem in groupItem.groupItems"
           :type="barItem.scaleBarType"
           :scaleLabel="barItem.scaleLabel"
+          ref="scaleBarRef"
         />
 
         <template #bottomText>
@@ -128,11 +129,15 @@ provide(offsetsKey, { scaleBarOffsets });
 provide(containerKey, { container });
 provide(containerBoxKey, { containerBox });
 
+const scaleBarRef = ref<InstanceType<typeof ScaleBar>[]>();
+
 onMounted(() => {
   nextTick(() => {
     const scaleGroupBox = document.querySelectorAll(
       ".v3date-time-slider-scale-group-box"
     ) as NodeListOf<HTMLDivElement>;
+
+    let index = 0;
     const offsets = Array.from(scaleGroupBox).reduce(
       (prev: ScaleBarOffsetsItem[], item) => {
         const scaleBars =
@@ -141,10 +146,14 @@ onMounted(() => {
 
         Array.from(scaleBars).forEach((scaleItem) => {
           const offset = scaleItem.offsetLeft + groupLeft;
+
           prev.push({
             offset,
             dom: scaleItem,
+            ref: scaleBarRef.value ? scaleBarRef.value[index] : null,
           });
+
+          index++;
         });
         return prev;
       },
