@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="box">
-      <DateTimeSlider type="day" />
+      <DateTimeSlider type="time" />
     </div>
   </div>
 </template>

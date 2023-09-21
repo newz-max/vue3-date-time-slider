@@ -34,11 +34,11 @@
 <script lang="ts" setup>
 import { ScaleBar, ScaleBarGroup, SliderBlock } from "@/components";
 import { classPrefix } from "@/components/htmlClass";
+import { computed, nextTick, onMounted, provide, ref } from "vue";
 // dayjs
 import dayjs from "dayjs";
 // utils
 import { generateSliderData } from "@/utils";
-import { computed, nextTick, onMounted, provide, ref } from "vue";
 import { convertDataList } from "./utils";
 // provide
 import { containerBoxKey, containerKey, offsetsKey } from "./injectProvide";

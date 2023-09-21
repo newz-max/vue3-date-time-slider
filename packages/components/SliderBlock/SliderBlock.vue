@@ -42,6 +42,8 @@ const { containerBox } = inject(containerBoxKey, {
 /** 容器的宽度 */
 const containerMaxWidth = computed(() => {
   const res = container.value?.clientWidth || 0;
+  console.log(res, "res");
+
   return res;
 });
 
@@ -101,7 +103,12 @@ watch(x, (n) => {
       // const nextX = n + scaleBarOffsets.value[1].offset;
       if (!autoScrollMoveing.value) {
         const offsetX = scaleBarOffsets.value[currentScaleIndex.value].offset;
-        setBlockOffset(containerMaxWidth.value);
+        const blockOffset =
+          containerMaxWidth.value || 0 > offsetX
+            ? offsetX
+            : containerMaxWidth.value || 0;
+
+        setBlockOffset(blockOffset);
 
         autoScrollToScale(offsetX);
       }
@@ -209,12 +216,16 @@ const stopAutoScrollToScale = () => {
 const getScale = (x: number) => {
   let i = -1;
   const scaleIem = scaleBarOffsets.value.find((item, index, self) => {
-    if (index === self.length - 1) return true;
+    if (index === self.length - 1) {
+      i = index;
+      return true;
+    }
     const nextItem = self[index + 1];
     const flag = x >= item.offset && x <= nextItem.offset;
     if (flag) {
       i = index;
       return true;
+    } else {
     }
   });
 
@@ -222,6 +233,7 @@ const getScale = (x: number) => {
     ...scaleIem,
     index: i,
   };
+
   return res;
 };
 
@@ -264,6 +276,11 @@ const openCurrentSelectTooltip = () => {
   currentSelectScaleItem.value.ref?.usePopperRes?.show();
 };
 
+const init = () => {
+  setBlockOffset(0);
+  scrollToScale(0);
+};
+
 watch(currentScaleIndex, () => {
   openCurrentSelectTooltip();
   nextTick().then(() => {
@@ -276,6 +293,7 @@ watch(currentSelectScaleItem, (_n, o) => {
 });
 
 onMounted(() => {
+  init();
   window.removeEventListener("mouseup", handleMouseUp);
   window.addEventListener("mouseup", handleMouseUp);
 });
