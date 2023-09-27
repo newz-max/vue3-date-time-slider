@@ -17,7 +17,6 @@ import {
   onMounted,
   ref,
   nextTick,
-  watchEffect,
   watch,
 } from "vue";
 import { classPrefix } from "../htmlClass";
@@ -29,7 +28,6 @@ import { useMouse } from "../../hooks/mouse";
 // types
 import { ScaleBarOffsetsItem } from "@/components";
 // lodash
-import { delay } from "lodash";
 
 const { scaleBarOffsets } = inject(offsetsKey, { scaleBarOffsets: ref([]) });
 const { container } = inject(containerKey, {
@@ -39,13 +37,10 @@ const { containerBox } = inject(containerBoxKey, {
   containerBox: ref<HTMLDivElement>(),
 });
 
-/** 容器的宽度 */
-const containerMaxWidth = computed(() => {
+const getContainerMaxWidth = () => {
   const res = container.value?.clientWidth || 0;
-  console.log(res, "res");
-
   return res;
-});
+};
 
 /** 容器滚动条距离左侧距离 */
 const getBoxScrollLeft = () => {
@@ -73,9 +68,13 @@ const clickPosition = ref(0);
 const mouseUpPosition = ref(0);
 
 const rectForContainer = ref<DOMRect>();
-onMounted(async () => {
+const getRectForContainer = async () => {
   await nextTick();
   rectForContainer.value = container.value?.getBoundingClientRect();
+};
+
+onMounted(async () => {
+  getRectForContainer();
 });
 
 /** 鼠标是否向右超出容器 */
@@ -85,8 +84,8 @@ const rightBeyond = computed(() => {
 });
 
 /** 鼠标是否向左超出容器 */
-const leftByyond = computed(() => {
-  const res = x.value <= (rectForContainer.value?.left || 0) + 7;
+const leftBeyond = computed(() => {
+  const res = x.value <= (rectForContainer.value?.left || 0);
 
   return res && isMouseDown.value;
 });
@@ -100,47 +99,72 @@ watch(x, (n) => {
   if (flag) {
     // 向右超出
     if (rightBeyond.value) {
-      // const nextX = n + scaleBarOffsets.value[1].offset;
-      if (!autoScrollMoveing.value) {
-        const offsetX = scaleBarOffsets.value[currentScaleIndex.value].offset;
-        const blockOffset =
-          containerMaxWidth.value || 0 > offsetX
-            ? offsetX
-            : containerMaxWidth.value || 0;
-
-        setBlockOffset(blockOffset);
-
-        autoScrollToScale(offsetX);
-      }
+      handleSliderBlockMove("right", n);
     }
+
     // 向左超出
-    else if (leftByyond.value) {
-      if (!autoScrollMoveing.value) {
-        const offsetX =
-          scaleBarOffsets.value[currentScaleIndex.value].offset + 7;
-        setBlockOffset(0);
-        autoScrollToScale(offsetX, "left");
-      }
+    else if (leftBeyond.value) {
+      handleSliderBlockMove("left", n);
     }
     // 范围内移动
     else {
       stopAutoScrollToScale();
-      const scaleItem = getScale(calcMouseOffsetX(n));
-
-      if (scaleItem.offset !== undefined) {
-        setBlockOffset(scaleItem.offset);
-
-        const realScaleItem = getScale(
-          calcMouseOffsetX(n) + getBoxScrollLeft()
-        );
-
-        currentScaleIndex.value = realScaleItem.index;
-      }
+      handleSliderBlockMove("inScope", n);
     }
   }
 });
 
-/** 设置 */
+/**
+ * 滑块向左或向右自动移动处理
+ * @param {number} n 鼠标在屏幕中的 x 位置
+ */
+const handleSliderBlockMove = (
+  type: "left" | "right" | "inScope",
+  n: number
+) => {
+  const scrollLeft = getBoxScrollLeft();
+  const containerWidth = getContainerMaxWidth();
+  const relativeMouseXToController = calcMouseOffsetX(n);
+  const realScaleX = relativeMouseXToController + scrollLeft;
+
+  let blockOffset = 0;
+  let getScaleX = scrollLeft + 1;
+
+  let offsetX = 0;
+
+  // 左右移动的差异化处理
+  switch (type) {
+    case "left":
+      setCurrentScaleIndex(getScaleX);
+      offsetX = scaleBarOffsets.value[currentScaleIndex.value].offset + 7;
+      break;
+
+    case "right":
+      blockOffset = containerWidth;
+      getScaleX += containerWidth;
+      setCurrentScaleIndex(getScaleX);
+      offsetX = scaleBarOffsets.value[currentScaleIndex.value].offset;
+      break;
+    case "inScope":
+      getScaleX = realScaleX;
+      setCurrentScaleIndex(getScaleX);
+      blockOffset = getScale(relativeMouseXToController).offset || 0;
+      break;
+  }
+
+  setBlockOffset(blockOffset);
+  if (type !== "inScope") {
+    if (!autoScrollMoveing.value) autoScrollToScale(offsetX, type);
+  }
+};
+
+/** 设置 currentScaleIndex */
+const setCurrentScaleIndex = (x: number) => {
+  const scaleItem = getScale(x);
+  currentScaleIndex.value = scaleItem.index;
+};
+
+/** 设置滑块偏移量 */
 const setBlockOffset = (x: number) => {
   const dom = blockRef.value as HTMLDivElement;
   dom.setAttribute("style", `left : ${x + baseLeftOffset}px`);
@@ -191,7 +215,7 @@ const autoScrollToScale = (
     const nextX = getNextX();
     scrollToScale(nextX);
 
-    const scaleItem = getScale(nextX);
+    const scaleItem = getScale(nextX + 1);
 
     if (scaleItem.index !== -1) {
       currentScaleIndex.value = scaleItem.index;
@@ -279,17 +303,50 @@ const openCurrentSelectTooltip = () => {
 const init = () => {
   setBlockOffset(0);
   scrollToScale(0);
+  getRectForContainer();
 };
 
-watch(currentScaleIndex, () => {
-  openCurrentSelectTooltip();
+/** 当前选中项对应 scaleBarOffsets 的 index 监听 */
+watch(currentScaleIndex, (n) => {
   nextTick().then(() => {
     closePrevSelectTooltip();
   });
+  singleScaleBlockActive();
+
+  // 当选中首项元素或者末尾元素时停止自动滚动
+  if (n === 0 || n === scaleBarOffsets.value.length - 1) {
+    stopAutoScrollToScale();
+  }
 });
 
+/** 单个滑块时的刻度块的遍历选中 */
+const singleScaleBlockActive = () => {
+  let leftI = 0;
+  // let rightI = scaleBarOffsets.value.length;
+
+  let index = currentScaleIndex.value;
+  if (leftBeyond.value) {
+    index = 0;
+  } else if (rightBeyond.value) {
+    index = scaleBarOffsets.value.length - 1;
+  }
+
+  while (leftI < index) {
+    scaleBarOffsets.value[leftI].ref?.setActive(true);
+    leftI++;
+  }
+
+  while (leftI >= index && leftI < scaleBarOffsets.value.length) {
+    scaleBarOffsets.value[leftI].ref?.setActive(false);
+    leftI++;
+  }
+};
+
+/** 当前选中项监听 */
 watch(currentSelectScaleItem, (_n, o) => {
   prevSelectScaleItem.value = o;
+
+  openCurrentSelectTooltip();
 });
 
 onMounted(() => {
@@ -300,6 +357,13 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   window.removeEventListener("mouseup", handleMouseUp);
+});
+
+defineExpose({
+  setBlockOffset,
+  init,
+  scrollToScale,
+  currentSelectScaleItem,
 });
 </script>
 

@@ -22,6 +22,8 @@ import { DateTimeSlider } from "../packages";
 }
 
 .box {
-  position: absolute;
+  position: fixed;
+  top: 200px;
+  left: 300px;
 }
 </style>

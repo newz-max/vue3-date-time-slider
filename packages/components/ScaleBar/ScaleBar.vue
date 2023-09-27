@@ -13,6 +13,12 @@
       {{ scaleLabel }}
       <div :id="`${classPrefix}-scale-label-arrow`" data-popper-arrow></div>
     </div>
+
+    <!-- 底色 -->
+    <div
+      :class="[{ 'v3date-time-slider-bar-active': active }]"
+      class="v3date-time-slider-backgroup-color-div"
+    ></div>
   </div>
 </template>
 
@@ -77,10 +83,20 @@ const getScalePosition = () => {
 
 onMounted(() => {});
 
+/** 刻度块的选中状态（仅仅与背景颜色关联） */
+const active = ref(false);
+
+/** 设置该刻度块的选中状态（仅仅是改变背景颜色） */
+const setActive = (state: boolean = false) => {
+  active.value = state;
+};
+
 defineExpose({
   getScaleVal,
   getScalePosition,
   usePopperRes,
+  setActive,
+  active,
 });
 </script>
 
@@ -105,5 +121,18 @@ defineExpose({
 .v3date-time-slider-bar-end {
   height: 40px;
   border-color: white;
+}
+.v3date-time-slider-backgroup-color-div {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 20px;
+  z-index: 0;
+  background-color: #4f4f4f;
+}
+
+.v3date-time-slider-bar-active {
+  background-color: #333333 !important;
 }
 </style>

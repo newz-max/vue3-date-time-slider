@@ -13,8 +13,6 @@
     <div :class="[`${classPrefix}-scale-group-box`]">
       <slot></slot>
     </div>
-    <!-- 背景色 -->
-    <div :class="[`${classPrefix}-backgroup-color-div`]"></div>
 
     <div :class="[`${classPrefix}-bottom-text`]">
       <slot name="bottomText"></slot>
@@ -91,16 +89,6 @@ const groupWidth = computed(() => {
   height: 13px;
   margin-left: calc(var(--scale-bar-space-width) + 9px);
   padding-bottom: 3px;
-}
-
-.v3date-time-slider-backgroup-color-div {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 20px;
-  z-index: 0;
-  background-color: #4f4f4f;
 }
 
 .v3date-time-slider-scale-group-box {

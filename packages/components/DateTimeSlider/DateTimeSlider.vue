@@ -26,7 +26,7 @@
     </div>
 
     <div :class="`${classPrefix}-block-move-bar-container`">
-      <SliderBlock />
+      <SliderBlock ref="sliderBlockRef" />
     </div>
   </div>
 </template>
@@ -34,7 +34,7 @@
 <script lang="ts" setup>
 import { ScaleBar, ScaleBarGroup, SliderBlock } from "@/components";
 import { classPrefix } from "@/components/htmlClass";
-import { computed, nextTick, onMounted, provide, ref } from "vue";
+import { computed, nextTick, onMounted, provide, ref, watch } from "vue";
 // dayjs
 import dayjs from "dayjs";
 // utils
@@ -108,7 +108,6 @@ const currentTypeData = computed(() => {
 
   return res;
 });
-currentTypeData.value;
 
 const textVisible = computed(() => {
   return (index: number) => {
@@ -131,7 +130,7 @@ provide(containerBoxKey, { containerBox });
 
 const scaleBarRef = ref<InstanceType<typeof ScaleBar>[]>();
 
-onMounted(() => {
+const updateScaleBarOffsets = () => {
   nextTick(() => {
     const scaleGroupBox = document.querySelectorAll(
       ".v3date-time-slider-scale-group-box"
@@ -162,7 +161,24 @@ onMounted(() => {
 
     scaleBarOffsets.value = offsets;
   });
+};
+onMounted(() => {
+  updateScaleBarOffsets();
 });
+
+const sliderBlockRef = ref<InstanceType<typeof SliderBlock>>();
+const reset = () => {
+  scaleBarRef.value = [];
+  updateScaleBarOffsets();
+  sliderBlockRef.value?.init();
+};
+
+watch(
+  () => props.type,
+  () => {
+    reset();
+  }
+);
 </script>
 
 <style lang="scss" scoped>
